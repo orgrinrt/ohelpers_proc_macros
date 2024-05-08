@@ -1,10 +1,8 @@
 [package]
-name = "proc_macro_misc_helpers"
+name = "ohelpers_proc_macros"
+authors = ["orgrinrt", "Hiisi Digital"]
 version = "0.1.0"
 edition = "2021"
-
-[lints]
-workspace = true
 
 [features]
 default = []
