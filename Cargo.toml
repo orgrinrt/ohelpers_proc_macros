@@ -9,8 +9,8 @@ default = []
 debug_file = []
 
 [dependencies]
-debug_helpers = { path = "../debug_helpers" }
-derive_display = { path = "../derive_display" }
+odebug = { git = "https://github.com/orgrinrt/odebug.git" }
+derive_display = { git = "https://github.com/orgrinrt/derive_display.git" }
 syn = { version = "2.0.52", features = ["full", "extra-traits"] }
 quote = "1.0.9"
 paste = "1.0.14"
