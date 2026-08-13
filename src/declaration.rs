@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use debug_helpers::debug_file;
+use crate::__pmmh_debug_file;
 use paste::paste;
 use proc_macro2::{Ident, TokenStream};
 use quote::{quote, ToTokens};
@@ -23,13 +23,13 @@ use crate::{
 pub type Trails<T: Parse = Declaration> = PunctSet<T, Token![+]>;
 
 /// e.g:
-/// ```
+/// ```text
 /// SomeType(a: u8 = 1, b: f32): TraitA + TraitB + TraitC
 /// SomeType(X(y)): Foo + Bar
 /// Foo(bar)
 /// ```
 /// NOTE: Also allows for a braced body that is just returned as a single
-/// TokenStream2 ```
+/// TokenStream2 ```text
 /// Foo(bar) {
 ///    // Something here
 /// }
@@ -111,16 +111,16 @@ impl Parse for Declaration {
         let ty: Ident = unwrapped_input
             .parse()
             .expect("Expected a Type for Declaration");
-        debug_file!(!"Found ident, starting to parse Declaration for `{}`", ty);
+        __pmmh_debug_file!(!"Found ident, starting to parse Declaration for `{}`", ty);
         try_get_tuple_params!(unwrapped_input, params, Params);
         try_get_trails!(unwrapped_input, trails);
         if trails.is_some() {
-            debug_file!(
+            __pmmh_debug_file!(
                 trails.clone().unwrap(),
                 "Found trails for Declaration! (below)"
             );
         } else {
-            debug_file!("Found no trails for Declaration :-(");
+            __pmmh_debug_file!("Found no trails for Declaration :-(");
         }
         parse_peekables_until(unwrapped_input, token::Brace)?;
         let mut body = None;

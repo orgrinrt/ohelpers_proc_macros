@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use debug_helpers::debug_file;
+use crate::__pmmh_debug_file;
 use proc_macro2::{Ident, TokenStream, TokenTree};
 use quote::{quote, ToTokens};
 use syn::__private::TokenStream2;
@@ -78,7 +78,7 @@ impl Params {
 }
 
 /// e.g:
-/// ```
+/// ```text
 /// pub mut foo: Bar(fish: Fash = default()) = Bar::new(xyz)
 /// mut a: u8 = 1
 /// pub b: String = "aye".to_string()
@@ -219,7 +219,7 @@ impl ToTokens for Param {
 
 impl Parse for Param {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        debug_file!(input, "Starting to parse a Param, initial input below:");
+        __pmmh_debug_file!(input, "Starting to parse a Param, initial input below:");
 
         let publicity: Option<Token![pub]> = input.parse().ok();
         let mutability: Option<Token![mut]> = input.parse().ok();
@@ -240,11 +240,11 @@ impl Parse for Param {
         if _ty.is_none() {
             let some: TokenTree = input.parse()?;
             let msg = format!("Expected a Type for a Param, but got: `{}`", some);
-            debug_file!(!"\tERROR: {}", msg);
+            __pmmh_debug_file!(!"\tERROR: {}", msg);
             return Err(input.error(msg));
         }
         let ty = _ty.expect("Expected a Param to have a Type");
-        debug_file!(
+        __pmmh_debug_file!(
             !"\t<<< Found Type `{}` for the param",
             ty.clone().into_token_stream().to_string()
         );
@@ -274,8 +274,8 @@ impl Parse for Param {
             default_val,
         };
 
-        debug_file!(result, "Succesfully parsed a Param, value below:");
-        debug_file!("\n");
+        __pmmh_debug_file!(result, "Succesfully parsed a Param, value below:");
+        __pmmh_debug_file!("\n");
 
         Ok(result)
     }
