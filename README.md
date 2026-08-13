@@ -1,7 +1,6 @@
 ohelpers_proc_macros
 ============
 [![GitHub Stars](https://img.shields.io/github/stars/orgrinrt/ohelpers_proc_macros.svg)](https://github.com/orgrinrt/ohelpers_proc_macros/stargazers) 
-![Crates.io Total Downloads](https://img.shields.io/crates/d/ohelpers_proc_macros)
 [![GitHub Issues](https://img.shields.io/github/issues/orgrinrt/ohelpers_proc_macros.svg)](https://github.com/orgrinrt/ohelpers_proc_macros/issues) 
 [![Current Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/orgrinrt/ohelpers_proc_macros) 
 
