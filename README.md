@@ -5,7 +5,7 @@ ohelpers_proc_macros
 [![GitHub Issues](https://img.shields.io/github/issues/orgrinrt/ohelpers_proc_macros.svg)](https://github.com/orgrinrt/ohelpers_proc_macros/issues) 
 [![Current Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/orgrinrt/ohelpers_proc_macros) 
 
-Rust macross helpers and QoL shorthands.
+A collection of miscellaneous helpers, shorthands and common useful bits for Rust proc macros.
 
 ---
 ## Buy me a coffee
@@ -23,6 +23,6 @@ TODO
 ---
 
 ## License
->You can check out the full license [here](https://github.com/orgrinrt/ohelpers_proc_macros/blob/master/LICENSE)
+>You can check out the full license [here](https://github.com/orgrinrt/ohelpers_proc_macros/blob/main/LICENSE)
 
 This project is licensed under the terms of the **MIT** license.

@@ -3,6 +3,8 @@ name = "ohelpers_proc_macros"
 authors = ["orgrinrt", "Hiisi Digital"]
 version = "0.1.0"
 edition = "2021"
+description = "A collection of miscellaneous helpers, shorthands and common useful bits for Rust proc macros"
+license = "MIT"
 
 [features]
 default = []
