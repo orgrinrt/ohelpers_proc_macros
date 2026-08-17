@@ -39,7 +39,7 @@ pub fn find_end_of_widget_body(input: ParseStream) -> syn::Result<TokenStream2> 
         match l {
             TokenTree::Punct(punct) if punct.as_char() == '{' => {
                 braces_counter += 1;
-            },
+            }
             TokenTree::Punct(punct) if punct.as_char() == '}' => {
                 braces_counter -= 1;
 
@@ -54,13 +54,13 @@ pub fn find_end_of_widget_body(input: ParseStream) -> syn::Result<TokenStream2> 
                         }
                     }
                 }
-            },
+            }
             TokenTree::Punct(punct) if punct.as_char() == '#' => {
                 if output.to_string().trim_end().ends_with("}") {
                     break;
                 }
-            },
-            _ => {},
+            }
+            _ => {}
         }
 
         output.extend(Some(lookahead));

@@ -2,8 +2,8 @@ use std::fmt::{Debug, Display, Formatter};
 
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
-use syn::__private::TokenStream2;
 use syn::Error;
+use syn::__private::TokenStream2;
 use syn::parse::{Parse, ParseStream, Peek};
 use syn::token::Token;
 

@@ -16,13 +16,17 @@ fn rendered(tokens: TokenStream2) -> String {
 
 #[test]
 fn quote_if_emits_the_block_when_the_predicate_holds() {
-    let emitted: TokenStream2 = quote_if!(true, { let x = 1; });
+    let emitted: TokenStream2 = quote_if!(true, {
+        let x = 1;
+    });
     assert_eq!(rendered(emitted), rendered(quote! { let x = 1; }));
 }
 
 #[test]
 fn quote_if_emits_nothing_when_the_predicate_does_not_hold() {
-    let emitted: TokenStream2 = quote_if!(false, { let x = 1; });
+    let emitted: TokenStream2 = quote_if!(false, {
+        let x = 1;
+    });
     assert!(rendered(emitted).is_empty(), "nothing is emitted");
 }
 
@@ -41,7 +45,10 @@ fn quote_if_some_follows_the_option() {
 
     let absent: Option<TokenStream2> = None;
     let emitted: TokenStream2 = quote_if!(some absent);
-    assert!(rendered(emitted).is_empty(), "an absent option emits nothing");
+    assert!(
+        rendered(emitted).is_empty(),
+        "an absent option emits nothing"
+    );
 }
 
 #[test]

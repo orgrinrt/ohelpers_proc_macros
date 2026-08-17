@@ -25,7 +25,7 @@ pub struct PunctSet<
     T: Parse + Display + ToTokens = TokenStream2,
     D: Token + Parse + Default = Token![,],
 > {
-    pub vals:  Vec<T>,
+    pub vals: Vec<T>,
     pub delim: Option<D>,
 }
 
@@ -107,9 +107,6 @@ impl<T: Parse + Display + ToTokens + 'static, D: Token + Parse + Default + 'stat
             vec.push(v);
         }
         __pmmh_debug_file!(quote!(#(#vec),*), "Result of parsing PunctSet below:");
-        Ok(Self {
-            vals: vec,
-            delim,
-        })
+        Ok(Self { vals: vec, delim })
     }
 }

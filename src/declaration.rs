@@ -12,12 +12,7 @@ use crate::param::Params;
 use crate::parse_utils::parse_peekables_until;
 use crate::punct_set::PunctSet;
 use crate::{
-    discard_next_token,
-    surround,
-    try_get_trails,
-    try_get_tuple_params,
-    unwrap_input,
-    EMPTY_STR,
+    discard_next_token, surround, try_get_trails, try_get_tuple_params, unwrap_input, EMPTY_STR,
 };
 
 pub type Trails<T: Parse = Declaration> = PunctSet<T, Token![+]>;
@@ -37,11 +32,11 @@ pub type Trails<T: Parse = Declaration> = PunctSet<T, Token![+]>;
 /// ```
 #[derive(Clone)]
 pub struct Declaration {
-    pub name:   Option<Ident>,
-    pub ty:     Ident,
+    pub name: Option<Ident>,
+    pub ty: Ident,
     pub params: Option<Params>,
     pub trails: Option<Trails>,
-    pub body:   Option<TokenStream2>,
+    pub body: Option<TokenStream2>,
 }
 
 impl Declaration {

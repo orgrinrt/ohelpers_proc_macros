@@ -34,7 +34,11 @@ impl Params {
             let let_decl = val.as_regular_let_decl_without_end_punct();
             let val: ParseFirst<Ident> =
                 syn::parse2(let_decl.clone()).expect("Expected a valid ident for the let_decl");
-            let end = if idx >= vals_len - 1 { quote!() } else { quote!(,) };
+            let end = if idx >= vals_len - 1 {
+                quote!()
+            } else {
+                quote!(,)
+            };
             let q = quote! {
                 #let_decl = #val.clone() #end
             };
@@ -51,7 +55,11 @@ impl Params {
             let let_decl = val.as_regular_let_decl_without_end_punct();
             let val: ParseFirst<Ident> =
                 syn::parse2(let_decl.clone()).expect("Expected a valid ident for the let_decl");
-            let end = if idx >= vals_len - 1 { quote!() } else { quote!(,) };
+            let end = if idx >= vals_len - 1 {
+                quote!()
+            } else {
+                quote!(,)
+            };
             let q = quote! {
                 #let_decl = self.#val.clone() #end
             };
@@ -67,7 +75,11 @@ impl Params {
         for (idx, val) in vals.iter().enumerate() {
             let let_decl = val.as_define();
             let val = &let_decl.ident;
-            let end = if idx >= vals_len - 1 { quote!() } else { quote!(,) };
+            let end = if idx >= vals_len - 1 {
+                quote!()
+            } else {
+                quote!(,)
+            };
             let q = quote! {
                 #val: #val.clone() #end
             };
@@ -88,11 +100,11 @@ impl Params {
 /// ```
 #[derive(Clone)]
 pub struct Param {
-    pub publicity:   Option<Token![pub]>,
-    pub mutability:  Option<Token![mut]>,
-    pub name:        Option<Ident>,
-    pub ty:          Type,
-    pub tuple_args:  Option<PunctSet<TokenStream2, Token![,]>>,
+    pub publicity: Option<Token![pub]>,
+    pub mutability: Option<Token![mut]>,
+    pub name: Option<Ident>,
+    pub ty: Type,
+    pub tuple_args: Option<PunctSet<TokenStream2, Token![,]>>,
     pub default_val: Option<(Token![=], Expr)>,
 }
 
@@ -110,12 +122,12 @@ impl Param {
                 quote! {
                     let #mutability #name: #ty = #default_val ;
                 }
-            },
+            }
             None => {
                 quote! {
                     let #mutability #name: #ty ;
                 }
-            },
+            }
         };
         ts
     }
@@ -133,12 +145,12 @@ impl Param {
                 quote! {
                     let #mutability #name: #ty = #default_val
                 }
-            },
+            }
             None => {
                 quote! {
                     let #mutability #name: #ty
                 }
-            },
+            }
         };
         ts
     }
@@ -161,8 +173,16 @@ impl Display for Param {
         f.write_fmt(format_args!(
             "{}{}{}\
         {}{}{}",
-            if self.publicity.is_some() { "pub " } else { EMPTY },
-            if self.mutability.is_some() { "mut " } else { EMPTY },
+            if self.publicity.is_some() {
+                "pub "
+            } else {
+                EMPTY
+            },
+            if self.mutability.is_some() {
+                "mut "
+            } else {
+                EMPTY
+            },
             if self.name.is_some() {
                 format!("{}: ", self.name.clone().unwrap())
             } else {
