@@ -29,7 +29,8 @@ pub type Trails<T: Parse = Declaration> = PunctSet<T, Token![+]>;
 /// Foo(bar)
 /// ```
 /// NOTE: Also allows for a braced body that is just returned as a single
-/// TokenStream2 ```text
+/// TokenStream2
+/// ```text
 /// Foo(bar) {
 ///    // Something here
 /// }
