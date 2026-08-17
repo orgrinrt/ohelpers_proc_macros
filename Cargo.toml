@@ -4,7 +4,11 @@ authors = ["orgrinrt", "Hiisi Digital"]
 version = "0.1.0"
 edition = "2021"
 description = "A collection of miscellaneous helpers, shorthands and common useful bits for Rust proc macros"
-license = "MIT"
+license = "MPL-2.0"
+readme = "README.md"
+repository = "https://github.com/orgrinrt/ohelpers_proc_macros"
+homepage = "https://github.com/orgrinrt/ohelpers_proc_macros"
+documentation = "https://docs.rs/ohelpers_proc_macros"
 
 [features]
 default = []
