@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use debug_helpers::debug_file;
+use crate::__pmmh_debug_file;
 use proc_macro2::{Ident, TokenStream, TokenTree};
 use quote::{quote, ToTokens};
 use syn::__private::TokenStream2;
@@ -34,7 +34,11 @@ impl Params {
             let let_decl = val.as_regular_let_decl_without_end_punct();
             let val: ParseFirst<Ident> =
                 syn::parse2(let_decl.clone()).expect("Expected a valid ident for the let_decl");
-            let end = if idx >= vals_len - 1 { quote!() } else { quote!(,) };
+            let end = if idx >= vals_len - 1 {
+                quote!()
+            } else {
+                quote!(,)
+            };
             let q = quote! {
                 #let_decl = #val.clone() #end
             };
@@ -51,7 +55,11 @@ impl Params {
             let let_decl = val.as_regular_let_decl_without_end_punct();
             let val: ParseFirst<Ident> =
                 syn::parse2(let_decl.clone()).expect("Expected a valid ident for the let_decl");
-            let end = if idx >= vals_len - 1 { quote!() } else { quote!(,) };
+            let end = if idx >= vals_len - 1 {
+                quote!()
+            } else {
+                quote!(,)
+            };
             let q = quote! {
                 #let_decl = self.#val.clone() #end
             };
@@ -67,7 +75,11 @@ impl Params {
         for (idx, val) in vals.iter().enumerate() {
             let let_decl = val.as_define();
             let val = &let_decl.ident;
-            let end = if idx >= vals_len - 1 { quote!() } else { quote!(,) };
+            let end = if idx >= vals_len - 1 {
+                quote!()
+            } else {
+                quote!(,)
+            };
             let q = quote! {
                 #val: #val.clone() #end
             };
@@ -78,7 +90,7 @@ impl Params {
 }
 
 /// e.g:
-/// ```
+/// ```text
 /// pub mut foo: Bar(fish: Fash = default()) = Bar::new(xyz)
 /// mut a: u8 = 1
 /// pub b: String = "aye".to_string()
@@ -88,11 +100,11 @@ impl Params {
 /// ```
 #[derive(Clone)]
 pub struct Param {
-    pub publicity:   Option<Token![pub]>,
-    pub mutability:  Option<Token![mut]>,
-    pub name:        Option<Ident>,
-    pub ty:          Type,
-    pub tuple_args:  Option<PunctSet<TokenStream2, Token![,]>>,
+    pub publicity: Option<Token![pub]>,
+    pub mutability: Option<Token![mut]>,
+    pub name: Option<Ident>,
+    pub ty: Type,
+    pub tuple_args: Option<PunctSet<TokenStream2, Token![,]>>,
     pub default_val: Option<(Token![=], Expr)>,
 }
 
@@ -110,12 +122,12 @@ impl Param {
                 quote! {
                     let #mutability #name: #ty = #default_val ;
                 }
-            },
+            }
             None => {
                 quote! {
                     let #mutability #name: #ty ;
                 }
-            },
+            }
         };
         ts
     }
@@ -133,12 +145,12 @@ impl Param {
                 quote! {
                     let #mutability #name: #ty = #default_val
                 }
-            },
+            }
             None => {
                 quote! {
                     let #mutability #name: #ty
                 }
-            },
+            }
         };
         ts
     }
@@ -161,8 +173,16 @@ impl Display for Param {
         f.write_fmt(format_args!(
             "{}{}{}\
         {}{}{}",
-            if self.publicity.is_some() { "pub " } else { EMPTY },
-            if self.mutability.is_some() { "mut " } else { EMPTY },
+            if self.publicity.is_some() {
+                "pub "
+            } else {
+                EMPTY
+            },
+            if self.mutability.is_some() {
+                "mut "
+            } else {
+                EMPTY
+            },
             if self.name.is_some() {
                 format!("{}: ", self.name.clone().unwrap())
             } else {
@@ -219,7 +239,7 @@ impl ToTokens for Param {
 
 impl Parse for Param {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        debug_file!(input, "Starting to parse a Param, initial input below:");
+        __pmmh_debug_file!(input, "Starting to parse a Param, initial input below:");
 
         let publicity: Option<Token![pub]> = input.parse().ok();
         let mutability: Option<Token![mut]> = input.parse().ok();
@@ -240,11 +260,11 @@ impl Parse for Param {
         if _ty.is_none() {
             let some: TokenTree = input.parse()?;
             let msg = format!("Expected a Type for a Param, but got: `{}`", some);
-            debug_file!(!"\tERROR: {}", msg);
+            __pmmh_debug_file!(!"\tERROR: {}", msg);
             return Err(input.error(msg));
         }
         let ty = _ty.expect("Expected a Param to have a Type");
-        debug_file!(
+        __pmmh_debug_file!(
             !"\t<<< Found Type `{}` for the param",
             ty.clone().into_token_stream().to_string()
         );
@@ -274,8 +294,8 @@ impl Parse for Param {
             default_val,
         };
 
-        debug_file!(result, "Succesfully parsed a Param, value below:");
-        debug_file!("\n");
+        __pmmh_debug_file!(result, "Succesfully parsed a Param, value below:");
+        __pmmh_debug_file!("\n");
 
         Ok(result)
     }

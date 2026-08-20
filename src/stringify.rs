@@ -17,7 +17,7 @@ macro_rules! token_name {
         }
     };
     (peekable ty $name:ty) => {
-        <$name>::display();
+        <$name>::display()
     };
     (parsable $name:expr) => {
         {

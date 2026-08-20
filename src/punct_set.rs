@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter, Pointer, Write};
 
-use debug_helpers::debug_file;
+use crate::__pmmh_debug_file;
 use derive_display::derive_display;
 use paste::paste;
 use proc_macro2::TokenTree;
@@ -14,7 +14,7 @@ use crate::{token_name, unwrap_input, TokenStream2};
 
 /// Any punctuated set of instances of type T, delimited by a token of type D
 /// e.g
-/// ```
+/// ```text
 /// here, is, stuff, de, limited, by_commas, each_being_an_ident
 /// This + Is + Types + Delimited + By + Pluses
 /// a::b::c::d::e::f::g
@@ -25,7 +25,7 @@ pub struct PunctSet<
     T: Parse + Display + ToTokens = TokenStream2,
     D: Token + Parse + Default = Token![,],
 > {
-    pub vals:  Vec<T>,
+    pub vals: Vec<T>,
     pub delim: Option<D>,
 }
 
@@ -59,7 +59,7 @@ impl<T: Parse + Display + ToTokens + 'static, D: Token + Parse + Default + 'stat
     syn::parse::Parse for PunctSet<T, D>
 {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        debug_file!(
+        __pmmh_debug_file!(
             input,
             format!(
                 "parsing a {:?} from a punctuated stream, by delim `{}`: input \
@@ -79,9 +79,9 @@ impl<T: Parse + Display + ToTokens + 'static, D: Token + Parse + Default + 'stat
             if next.eof() && punct.is_some() {
                 break;
             }
-            debug_file!(!"Processing unwrapped_input `{}`", unwrapped_input);
+            __pmmh_debug_file!(!"Processing unwrapped_input `{}`", unwrapped_input);
             let stream: TokenStream2 = parse_until(unwrapped_input, D::default())?;
-            debug_file!(
+            __pmmh_debug_file!(
                 !"Parsed until {}, what remains is: `{}`",
                 D::display(),
                 stream
@@ -99,17 +99,14 @@ impl<T: Parse + Display + ToTokens + 'static, D: Token + Parse + Default + 'stat
                 );
             }
             let v = val.unwrap();
-            debug_file!(!"Found stream `{}`", v);
+            __pmmh_debug_file!(!"Found stream `{}`", v);
             if delim.is_none() {
                 delim = unwrapped_input.parse().ok();
-                debug_file!(!"Found a punct `{:?}`", D::display());
+                __pmmh_debug_file!(!"Found a punct `{:?}`", D::display());
             }
             vec.push(v);
         }
-        debug_file!(quote!(#(#vec),*), "Result of parsing PunctSet below:");
-        Ok(Self {
-            vals: vec,
-            delim,
-        })
+        __pmmh_debug_file!(quote!(#(#vec),*), "Result of parsing PunctSet below:");
+        Ok(Self { vals: vec, delim })
     }
 }

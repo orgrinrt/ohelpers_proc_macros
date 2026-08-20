@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use debug_helpers::debug_file;
+use crate::__pmmh_debug_file;
 use paste::paste;
 use proc_macro2::{Ident, TokenStream};
 use quote::{quote, ToTokens};
@@ -12,35 +12,31 @@ use crate::param::Params;
 use crate::parse_utils::parse_peekables_until;
 use crate::punct_set::PunctSet;
 use crate::{
-    discard_next_token,
-    surround,
-    try_get_trails,
-    try_get_tuple_params,
-    unwrap_input,
-    EMPTY_STR,
+    discard_next_token, surround, try_get_trails, try_get_tuple_params, unwrap_input, EMPTY_STR,
 };
 
 pub type Trails<T: Parse = Declaration> = PunctSet<T, Token![+]>;
 
 /// e.g:
-/// ```
+/// ```text
 /// SomeType(a: u8 = 1, b: f32): TraitA + TraitB + TraitC
 /// SomeType(X(y)): Foo + Bar
 /// Foo(bar)
 /// ```
 /// NOTE: Also allows for a braced body that is just returned as a single
-/// TokenStream2 ```
+/// TokenStream2
+/// ```text
 /// Foo(bar) {
 ///    // Something here
 /// }
 /// ```
 #[derive(Clone)]
 pub struct Declaration {
-    pub name:   Option<Ident>,
-    pub ty:     Ident,
+    pub name: Option<Ident>,
+    pub ty: Ident,
     pub params: Option<Params>,
     pub trails: Option<Trails>,
-    pub body:   Option<TokenStream2>,
+    pub body: Option<TokenStream2>,
 }
 
 impl Declaration {
@@ -111,16 +107,16 @@ impl Parse for Declaration {
         let ty: Ident = unwrapped_input
             .parse()
             .expect("Expected a Type for Declaration");
-        debug_file!(!"Found ident, starting to parse Declaration for `{}`", ty);
+        __pmmh_debug_file!(!"Found ident, starting to parse Declaration for `{}`", ty);
         try_get_tuple_params!(unwrapped_input, params, Params);
         try_get_trails!(unwrapped_input, trails);
         if trails.is_some() {
-            debug_file!(
+            __pmmh_debug_file!(
                 trails.clone().unwrap(),
                 "Found trails for Declaration! (below)"
             );
         } else {
-            debug_file!("Found no trails for Declaration :-(");
+            __pmmh_debug_file!("Found no trails for Declaration :-(");
         }
         parse_peekables_until(unwrapped_input, token::Brace)?;
         let mut body = None;

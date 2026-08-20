@@ -3,14 +3,20 @@ name = "ohelpers_proc_macros"
 authors = ["orgrinrt", "Hiisi Digital"]
 version = "0.1.0"
 edition = "2021"
+description = "A collection of miscellaneous helpers, shorthands and common useful bits for Rust proc macros"
+license = "MPL-2.0"
+readme = "README.md"
+repository = "https://github.com/orgrinrt/ohelpers_proc_macros"
+homepage = "https://github.com/orgrinrt/ohelpers_proc_macros"
+documentation = "https://docs.rs/ohelpers_proc_macros"
 
 [features]
 default = []
 debug_file = []
 
 [dependencies]
-odebug = { git = "https://github.com/orgrinrt/odebug.git" }
-derive_display = { git = "https://github.com/orgrinrt/derive_display.git" }
+odebug = { git = "https://github.com/orgrinrt/odebug.git", version = "0.1" }
+derive_display = { git = "https://github.com/orgrinrt/derive_display.git", version = "0.0.4" }
 syn = { version = "2.0.52", features = ["full", "extra-traits"] }
 quote = "1.0.9"
 paste = "1.0.14"

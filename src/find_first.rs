@@ -2,12 +2,12 @@ use std::fmt::{Debug, Display, Formatter};
 
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
-use syn::__private::TokenStream2;
 use syn::Error;
+use syn::__private::TokenStream2;
 use syn::parse::{Parse, ParseStream, Peek};
 use syn::token::Token;
 
-use debug_helpers::debug_file;
+use crate::__pmmh_debug_file;
 
 use crate::{discard_next_token, token_name};
 
@@ -28,7 +28,7 @@ impl<P: Parse + Display + quote::ToTokens> ToTokens for ParseFirst<P> {
 
 impl<P: Parse + Display + Token> Parse for ParseFirst<P> {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        debug_file!(
+        __pmmh_debug_file!(
             input,
             format!(
                 "Starting to Parse first of type {} (input below)",
@@ -40,7 +40,7 @@ impl<P: Parse + Display + Token> Parse for ParseFirst<P> {
         while !input.is_empty() {
             let result: Option<P> = input.parse::<P>().ok();
             if let Some(p) = result {
-                debug_file!(
+                __pmmh_debug_file!(
                     !"Finished parsing first of type {}, it was this: {}",
                     token_name!(ty P),
                     token_name!(ident p)
@@ -50,7 +50,7 @@ impl<P: Parse + Display + Token> Parse for ParseFirst<P> {
             }
             discard_next_token!(input);
         }
-        debug_file!(
+        __pmmh_debug_file!(
             !"COULD NOT PARSE first of type {}, what was left was this: {}",
             token_name!(ty P),
             input

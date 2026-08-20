@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use debug_helpers::debug_file;
+use crate::__pmmh_debug_file;
 use derive_display::derive_display;
 use proc_macro2::{Ident, TokenStream, TokenTree};
 use quote::{quote, ToTokens};
@@ -15,7 +15,7 @@ pub type Defines = PunctSet<Define, Token![,]>;
 impl Defines {
     pub fn empty() -> Self {
         Defines {
-            vals:  Vec::new(),
+            vals: Vec::new(),
             delim: Some(token::Comma::default()),
         }
     }
@@ -25,7 +25,7 @@ impl Defines {
 /// * `field_name` : `field_type`
 ///
 /// E.g:
-/// ```
+/// ```text
 /// foo: Bar
 /// ```
 /// Alternatively, it can be used to represent simple value assignments in
@@ -33,7 +33,7 @@ impl Defines {
 /// * `var_name` : `var_value`
 ///
 /// E.g:
-/// ```
+/// ```text
 /// thing: SomeCtor(cool)
 /// ```
 #[derive(Clone)]
@@ -75,11 +75,8 @@ impl Parse for Define {
             "Expected a value after the \
         ident",
         );
-        let result = Self {
-            ident,
-            value,
-        };
-        debug_file!(result, "Finishing parsin Define, value below:");
+        let result = Self { ident, value };
+        __pmmh_debug_file!(result, "Finishing parsin Define, value below:");
         Ok(result)
     }
 }
