@@ -15,7 +15,7 @@ default = []
 debug_file = []
 
 [dependencies]
-odebug = { git = "https://github.com/orgrinrt/odebug.git", version = "0.1" }
+odebug = "0.1"
 derive_display = { git = "https://github.com/orgrinrt/derive_display.git", version = "0.0.4" }
 syn = { version = "2.0.52", features = ["full", "extra-traits"] }
 quote = "1.0.9"
