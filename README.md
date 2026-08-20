@@ -24,4 +24,4 @@ TODO
 ## License
 >You can check out the full license [here](https://github.com/orgrinrt/ohelpers_proc_macros/blob/main/LICENSE)
 
-This project is licensed under the terms of the **MIT** license.
+This project is licensed under the terms of the **MPL-2.0** license.
