@@ -17,7 +17,48 @@ Whether you use this project, have learned something from it, or just like it, p
 
 ## Usage
 
-TODO
+These are used from inside another crate's proc macro, so the examples below are written the way a
+macro author calls them.
+
+`quote_if!` emits a block only when a predicate holds, which is the thing that otherwise turns every
+optional fragment into an `if`/`else` wrapped around two `quote!` calls:
+
+```rust
+use ohelpers_proc_macros::{quote_if, token_name, TokenStream2};
+use quote::quote;
+
+let derive_debug = true;
+let emitted: TokenStream2 = quote_if!(derive_debug, {
+    #[derive(Debug)]
+});
+assert!(!emitted.to_string().is_empty());
+
+// false emits nothing at all, rather than an empty block
+let emitted: TokenStream2 = quote_if!(false, { #[derive(Debug)] });
+assert!(emitted.to_string().is_empty());
+
+// `some` follows an Option without unwrapping it first
+let maybe: Option<TokenStream2> = Some(quote! { value });
+assert_eq!(quote_if!(some maybe).to_string(), quote! { value }.to_string());
+```
+
+`token_name!` gives the last segment of a type path, and sees through a generic parameter to the type
+it was instantiated with:
+
+```rust
+use ohelpers_proc_macros::token_name;
+
+struct Widget;
+assert_eq!(token_name!(ty Widget), "Widget");
+
+fn named<T>() -> &'static str {
+    token_name!(ty T)
+}
+assert_eq!(named::<u32>(), "u32");
+assert_eq!(named::<String>(), "String");
+```
+
+Every assertion above was run against the crate rather than written from the macro names.
 
 ---
 
