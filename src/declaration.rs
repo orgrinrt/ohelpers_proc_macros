@@ -1,6 +1,5 @@
 use std::fmt::{Display, Formatter};
 
-use crate::__pmmh_debug_file;
 use paste::paste;
 use proc_macro2::{Ident, TokenStream};
 use quote::{quote, ToTokens};
@@ -15,7 +14,7 @@ use crate::{
     discard_next_token, surround, try_get_trails, try_get_tuple_params, unwrap_input, EMPTY_STR,
 };
 
-pub type Trails<T: Parse = Declaration> = PunctSet<T, Token![+]>;
+pub type Trails<T = Declaration> = PunctSet<T, Token![+]>;
 
 /// e.g:
 /// ```text
@@ -58,7 +57,7 @@ impl Display for Declaration {
             } else {
                 EMPTY_STR.clone()
             },
-            self.ty.to_token_stream().to_string(),
+            self.ty.to_token_stream(),
             if self.params.is_some() {
                 format!("({})", self.params.clone().unwrap())
             } else {
@@ -76,8 +75,8 @@ impl Display for Declaration {
 impl ToTokens for Declaration {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let mut result = TokenStream2::new();
-        let mut s = self;
-        if let Some(v) = &s.name {
+        let s = self;
+        if let Some(_v) = &s.name {
             self.ty.to_tokens(&mut result);
             token::Colon::default().to_tokens(&mut result);
         }

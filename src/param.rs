@@ -1,10 +1,9 @@
 use std::fmt::{Display, Formatter};
 
-use crate::__pmmh_debug_file;
 use proc_macro2::{Ident, TokenStream, TokenTree};
 use quote::{quote, ToTokens};
 use syn::__private::TokenStream2;
-use syn::parse::{Parse, ParseStream, Parser};
+use syn::parse::{Parse, ParseStream};
 use syn::{parenthesized, token, Expr, Ident as IdentSyn, Token, Type};
 
 use crate::define::Define;
@@ -110,14 +109,15 @@ pub struct Param {
 
 impl Param {
     pub fn as_regular_let_decl(&self) -> TokenStream2 {
-        let publicity = &self.publicity; // NOTE: prob doesn't make sense here?
+        let _publicity = &self.publicity; // NOTE: prob doesn't make sense here?
         let mutability = &self.mutability;
         let name = &self.name;
         let ty = &self.ty;
         // let tuple_args = &self.tuple_args; // NOTE: this doesn't make sense here I
         // think?
         let default_val = &self.default_val;
-        let ts = match default_val {
+        
+        match default_val {
             Some((_, default_val)) => {
                 quote! {
                     let #mutability #name: #ty = #default_val ;
@@ -128,19 +128,19 @@ impl Param {
                     let #mutability #name: #ty ;
                 }
             }
-        };
-        ts
+        }
     }
 
     pub fn as_regular_let_decl_without_end_punct(&self) -> TokenStream2 {
-        let publicity = &self.publicity; // NOTE: prob doesn't make sense here?
+        let _publicity = &self.publicity; // NOTE: prob doesn't make sense here?
         let mutability = &self.mutability;
         let name = &self.name;
         let ty = &self.ty;
         // let tuple_args = &self.tuple_args; // NOTE: this doesn't make sense here I
         // think?
         let default_val = &self.default_val;
-        let ts = match default_val {
+        
+        match default_val {
             Some((_, default_val)) => {
                 quote! {
                     let #mutability #name: #ty = #default_val
@@ -151,8 +151,7 @@ impl Param {
                     let #mutability #name: #ty
                 }
             }
-        };
-        ts
+        }
     }
 
     pub fn as_define(&self) -> Define {
@@ -188,7 +187,7 @@ impl Display for Param {
             } else {
                 EMPTY_STR.clone()
             },
-            self.ty.to_token_stream().to_string(),
+            self.ty.to_token_stream(),
             if self.tuple_args.is_some() {
                 format!("({})", self.tuple_args.clone().unwrap())
             } else {
@@ -202,7 +201,6 @@ impl Display for Param {
                         .unwrap()
                         .1
                         .to_token_stream()
-                        .to_string()
                 )
             } else {
                 EMPTY_STR.clone()
@@ -214,7 +212,7 @@ impl Display for Param {
 impl ToTokens for Param {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let mut result = TokenStream2::new();
-        let mut s = self;
+        let s = self;
         if let Some(v) = s.publicity {
             v.to_tokens(&mut result);
         }

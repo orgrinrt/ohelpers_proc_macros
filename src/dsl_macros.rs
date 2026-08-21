@@ -1,15 +1,20 @@
-#![feature(macro_metavar_expr)]
-
+/// A binding pattern for a parameter list: bare at one parameter, a tuple otherwise.
+///
+/// The empty list gives `()`, which is what [`params_tuple`] gives for the same input, so
+/// the two stay usable together at every arity.
 #[macro_export]
 macro_rules! tuple_pat {
-    ($pat:pat) => {$pat};
-    ($($pat:pat),*) => { ($($pat,)*) };
+    () => { () };
+    ($pat:pat) => { $pat };
+    ($($pat:pat),+ $(,)?) => { ($($pat,)+) };
 }
 
+/// The type of a parameter list: bare at one parameter, a tuple otherwise.
 #[macro_export]
 macro_rules! params_tuple {
-    ($x:ty) => (($x));
-    ($($x:ty),+) => (($($x),+));
+    () => { () };
+    ($x:ty) => { $x };
+    ($($x:ty),+ $(,)?) => { ($($x),+) };
 }
 
 #[macro_export]
@@ -20,17 +25,8 @@ macro_rules! impl_opt_multiparam_trait {
             type Params = $crate::params_tuple!($($param),*);
 
             fn $method(params: Self::Params) -> Self {
-                let $crate::tuple_pat!($($name)*) = params.clone();
+                let $crate::tuple_pat!($($name),*) = params.clone();
 
-                $($body)*
-            }
-        }
-    };
-    ($tr:tt, $method:ident,  $ty:tt () { $($body:tt)* }) => {
-        impl $tr for $ty {
-            type Params = ();
-
-            fn $method(_: Self::Params) -> Self {
                 $($body)*
             }
         }

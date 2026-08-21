@@ -1,13 +1,12 @@
-use std::fmt::{Debug, Display, Formatter};
+use std::fmt::{Display, Formatter};
 
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::Error;
 use syn::__private::TokenStream2;
-use syn::parse::{Parse, ParseStream, Peek};
+use syn::parse::{Parse, ParseStream};
 use syn::token::Token;
 
-use crate::__pmmh_debug_file;
 
 use crate::{discard_next_token, token_name};
 
@@ -55,7 +54,7 @@ impl<P: Parse + Display + Token> Parse for ParseFirst<P> {
             token_name!(ty P),
             input
         );
-        return Err(Error::new(
+        Err(Error::new(
             input.span(),
             format!(
                 "Stream `{}` contained no elem of type {}",
@@ -63,7 +62,7 @@ impl<P: Parse + Display + Token> Parse for ParseFirst<P> {
                 P::display()
             )
             .as_str(),
-        ));
+        ))
     }
 }
 
@@ -85,7 +84,7 @@ impl<P: Parse + Default + Token> Parse for PeekFirst<P> {
             }
             discard_next_token!(input);
         }
-        return Err(Error::new(
+        Err(Error::new(
             input.span(),
             format!(
                 "Stream `{}` contained no elem of type {}",
@@ -93,6 +92,6 @@ impl<P: Parse + Default + Token> Parse for PeekFirst<P> {
                 P::display()
             )
             .as_str(),
-        ));
+        ))
     }
 }

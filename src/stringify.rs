@@ -8,16 +8,14 @@ use syn::token::Token;
 #[macro_export]
 macro_rules! token_name {
     (ty $name:ty) => {
-        {
-            if std::any::type_name::<$name>().split("::").last().is_some() {
-                std::any::type_name::<$name>().split("::").last().unwrap()
-            } else {
-                std::any::type_name::<$name>()
-            }
-        }
+        // `split` always yields at least one item, so the last one always exists.
+        ::core::any::type_name::<$name>()
+            .rsplit("::")
+            .next()
+            .unwrap_or(::core::any::type_name::<$name>())
     };
     (peekable ty $name:ty) => {
-        <$name>::display()
+        <$name as ::syn::token::Token>::display()
     };
     (parsable $name:expr) => {
         {
@@ -32,23 +30,12 @@ macro_rules! token_name {
     };
     (parsable ty $name:expr) => {
         {
-            use quote::ToTokens;
+            use ::quote::ToTokens;
 
             let name = $name.clone().into_token_stream().to_string();
-            let split =  name.split("::");
-            let count = split.clone().count();
-            if count > 0 {
-                let last = split.clone().last();
-                if last.is_some() {
-                    split.last().unwrap().to_string()
-                }
-                else {
-                    name
-                }
-            }
-            else {
-                name
-            }
+            // Trimmed, because a rendered path reads `a :: b :: C` and the raw segment
+            // would carry the space that separated it from the `::`.
+            name.rsplit("::").next().unwrap_or(&name).trim().to_string()
         }
     };
     (ident $name:ident) => {
@@ -65,7 +52,7 @@ macro_rules! token_name {
     (peekable $name:expr) => {
         {
             use $crate::stringify::peekable_as_string;
-            use syn::parse::Peek;
+            
 
             peekable_as_string($name)
         }
@@ -80,7 +67,11 @@ pub fn parsable_as_string<T: ToTokens>(token: T) -> String {
 
 impl<T: ToTokens> ToTokens for StringableParsable<T> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        (*self).to_tokens(tokens)
+        // The wrapped value, not `(*self)`. Dereferencing a `&StringableParsable<T>` gives
+        // a `StringableParsable<T>`, so the previous line called this method again and
+        // overflowed the stack the first time anybody used the type as `ToTokens`.
+        // `unconditional_recursion` had been reporting it.
+        self.0.to_tokens(tokens)
     }
 }
 
@@ -90,6 +81,27 @@ impl<T: ToTokens> From<T> for StringableParsable<T> {
     }
 }
 
+/// Unwraps the box rather than wrapping it.
+///
+/// This was removed during a cleanup on the grounds that it needed an unsized `T` to be
+/// reached, which is false: with `T = TokenStream` it is reachable by type annotation, and
+/// removing it turned `StringableParsable::<TokenStream>::from(Box::new(tokens))` from a
+/// conversion into a type error. Worse than the error, a caller using `.into()` without an
+/// annotation silently got `StringableParsable<Box<T>>` instead.
+///
+/// It does overlap with the blanket impl above for a boxed argument, so an unannotated
+/// `from` on a `Box` is ambiguous. That is a papercut a turbofish settles, and it is a
+/// smaller cost than not having the conversion:
+///
+/// ```
+/// use ohelpers_proc_macros::stringify::StringableParsable;
+/// use quote::quote;
+///
+/// // The box is unwrapped: the wrapped type is `TokenStream`, not `Box<TokenStream>`.
+/// let unwrapped: StringableParsable<proc_macro2::TokenStream> =
+///     StringableParsable::from(Box::new(quote! { a + b }));
+/// assert_eq!(unwrapped.to_string(), "a + b");
+/// ```
 impl<T: ToTokens> From<Box<T>> for StringableParsable<T> {
     fn from(value: Box<T>) -> Self {
         StringableParsable(*value)
@@ -98,10 +110,10 @@ impl<T: ToTokens> From<Box<T>> for StringableParsable<T> {
 
 impl<T: ToTokens> Display for StringableParsable<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{}", parsable_as_string(&*self)))
+        f.write_fmt(format_args!("{}", parsable_as_string(self)))
     }
 }
 
-pub fn peekable_as_string<T: Peek>(token: T) -> String {
+pub fn peekable_as_string<T: Peek>(_token: T) -> String {
     T::Token::display().to_string()
 }

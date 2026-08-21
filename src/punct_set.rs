@@ -1,11 +1,10 @@
-use std::fmt::{Display, Formatter, Pointer, Write};
+use std::fmt::{Display, Formatter};
 
-use crate::__pmmh_debug_file;
 use derive_display::derive_display;
 use paste::paste;
 use proc_macro2::TokenTree;
-use quote::{quote, ToTokens, TokenStreamExt};
-use syn::parse::{Parse, Parser, Peek};
+use quote::{quote, ToTokens};
+use syn::parse::Parse;
 use syn::token::Token;
 use syn::Token;
 
@@ -39,7 +38,7 @@ impl<T: Parse + Display + ToTokens + Clone, D: Token + Parse + Default + ToToken
          element",
         );
         let mut vals: Vec<T> = Vec::new();
-        let len = self.vals.iter().count();
+        let len = self.vals.len();
         for (idx, val) in self.vals.iter().enumerate() {
             if idx >= len - 1 {
                 break;
@@ -47,7 +46,7 @@ impl<T: Parse + Display + ToTokens + Clone, D: Token + Parse + Default + ToToken
             vals.push(val.clone());
         }
         let d = &self.delim;
-        if vals.len() > 0 {
+        if !vals.is_empty() {
             let q = quote!(#(#vals #d)*);
             q.to_tokens(tokens);
         }
@@ -88,10 +87,9 @@ impl<T: Parse + Display + ToTokens + 'static, D: Token + Parse + Default + 'stat
             );
             let val: Option<T> = syn::parse2::<T>(stream.clone()).ok();
             if val.is_none() {
-                let actual = syn::parse2::<TokenTree>(stream.clone()).ok().expect(format!("Found no `{}`, but expected there to be at least some TokenTree left in: `{}`",
+                let actual = syn::parse2::<TokenTree>(stream.clone()).unwrap_or_else(|_| panic!("Found no `{}`, but expected there to be at least some TokenTree left in: `{}`",
                                                                                           token_name!(ty T),
-                                                                                          stream
-                                                                                              .to_string()).as_str());
+                                                                                          stream));
                 panic!(
                     "Expected a {}, but found {}",
                     token_name!(ty T),
