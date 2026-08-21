@@ -1,5 +1,3 @@
-use std::fmt::{Display, Formatter};
-
 use derive_display::derive_display;
 use proc_macro2::{Ident, TokenStream, TokenTree};
 use quote::{quote, ToTokens};

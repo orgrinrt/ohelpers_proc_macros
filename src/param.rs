@@ -116,7 +116,7 @@ impl Param {
         // let tuple_args = &self.tuple_args; // NOTE: this doesn't make sense here I
         // think?
         let default_val = &self.default_val;
-        
+
         match default_val {
             Some((_, default_val)) => {
                 quote! {
@@ -139,7 +139,7 @@ impl Param {
         // let tuple_args = &self.tuple_args; // NOTE: this doesn't make sense here I
         // think?
         let default_val = &self.default_val;
-        
+
         match default_val {
             Some((_, default_val)) => {
                 quote! {
@@ -196,11 +196,7 @@ impl Display for Param {
             if self.default_val.is_some() {
                 format!(
                     " = {}",
-                    self.default_val
-                        .clone()
-                        .unwrap()
-                        .1
-                        .to_token_stream()
+                    self.default_val.clone().unwrap().1.to_token_stream()
                 )
             } else {
                 EMPTY_STR.clone()

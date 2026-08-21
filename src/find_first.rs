@@ -7,7 +7,6 @@ use syn::__private::TokenStream2;
 use syn::parse::{Parse, ParseStream};
 use syn::token::Token;
 
-
 use crate::{discard_next_token, token_name};
 
 pub struct ParseFirst<P: Parse + Display>(P);
