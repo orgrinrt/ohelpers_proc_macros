@@ -62,6 +62,23 @@ Every assertion above was run against the crate rather than written from the mac
 
 ---
 
+## Features
+
+| Feature | Default | What it does |
+|---|---|---|
+| `debug_file` | no | Writes what the macros expand to into a file, through `odebug`, which is how you find out what a generated body actually is. |
+| `no_std` | no | Says the consumer is `#![no_std]`. |
+| `no_alloc` | no | Says the consumer has no allocator either. Implies `no_std`. |
+
+Neither `no_std` nor `no_alloc` changes what this crate emits, and that is deliberate rather
+than an omission: the exported macros reach for `Box` and `ToString` through re-exports from
+this crate rather than naming `std`, `alloc` or the prelude, so one spelling already serves a
+`#![no_std]` consumer and a plain one alike. They exist so a consumer can say what it is and
+have the claim checked, and `tests/feature_matrix.rs` compiles a real consumer under each.
+
+This crate itself is always `std`. It is a helper library for writing procedural macros, which
+run in the compiler, and the compiler has an allocator.
+
 ## License
 >You can check out the full license [here](https://github.com/orgrinrt/ohelpers_proc_macros/blob/main/LICENSE)
 

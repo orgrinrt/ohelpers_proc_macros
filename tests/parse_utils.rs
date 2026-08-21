@@ -12,9 +12,8 @@
 //! and never matches. The tests naming a dead branch say so.
 
 use ohelpers_proc_macros::parse_utils::{
-    comes_next, comes_next_any_surrounder, ends_next, find_end_of_widget_body, parse_peekables_until,
-    parse_tokens_until,
-    parse_until, ts_ends_next, SurrounderDir,
+    comes_next, comes_next_any_surrounder, ends_next, find_end_of_widget_body,
+    parse_peekables_until, parse_tokens_until, parse_until, ts_ends_next, SurrounderDir,
 };
 use proc_macro2::TokenStream;
 use syn::parse::{ParseStream, Parser};
@@ -72,7 +71,10 @@ fn parse_peekables_until_takes_a_brace_group_whole() {
 
 #[test]
 fn parse_until_stops_before_the_terminator() {
-    let taken = on("a b ; c", |input| parse_until(input, <Token![;]>::default())).unwrap();
+    let taken = on("a b ; c", |input| {
+        parse_until(input, <Token![;]>::default())
+    })
+    .unwrap();
     assert_eq!(shown(taken), "a b");
 }
 
@@ -148,7 +150,10 @@ fn directional_surrounder_never_matches_a_brace_group() {
             Ok(comes_next_any_surrounder(input, dir.clone()))
         })
         .unwrap();
-        assert!(!seen, "{dir:?} does not match a group, though it reads as if it does");
+        assert!(
+            !seen,
+            "{dir:?} does not match a group, though it reads as if it does"
+        );
     }
 }
 
@@ -160,7 +165,10 @@ fn directional_surrounder_matches_a_bare_delimiter_punct() {
         Ok(comes_next_any_surrounder(input, SurrounderDir::Forward))
     })
     .unwrap();
-    assert!(!seen, "an angle bracket is not one of the three surrounders");
+    assert!(
+        !seen,
+        "an angle bracket is not one of the three surrounders"
+    );
 }
 
 #[test]
@@ -175,7 +183,10 @@ fn any_surrounder_on_an_exhausted_stream() {
     .unwrap());
 
     for dir in [SurrounderDir::Forward, SurrounderDir::Backward] {
-        let seen = on("", |input| Ok(comes_next_any_surrounder(input, dir.clone()))).unwrap();
+        let seen = on("", |input| {
+            Ok(comes_next_any_surrounder(input, dir.clone()))
+        })
+        .unwrap();
         assert!(!seen, "{dir:?} on an empty stream is false, not a panic");
     }
 }

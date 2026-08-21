@@ -187,7 +187,7 @@ macro_rules! discard_next_token {
         match $input.parse::<proc_macro2::TokenTree>() {
             Ok(discarded) => {
                 __pmmh_debug_file!(!"\t\t<<< Discarding {}", discarded.to_string());
-            },
+            }
             Err(_) => panic!("Attempted to discard from stream, but found no tokens"),
         }
     }};
@@ -321,7 +321,7 @@ macro_rules! unwrap_body {
     };
     (explicit ty $input:expr, $var:ident, $delim:ty) => {
         {
-            
+
             use $crate::token_name;
             use $crate::compare_tokens;
 
@@ -379,7 +379,7 @@ macro_rules! try_get_tuple_params {
     ($input:expr, $var:ident, $punct_set:ty) => {
         let mut $var: Option<$punct_set> = None;
         {
-            
+
 
             if $input.peek(token::Paren) || $input.peek2(token::Paren) {
                 if $input.peek2(token::Paren) {
@@ -401,7 +401,7 @@ macro_rules! try_get_trails {
     ($input:expr, $var:ident, $punct_set:ty) => {
         let mut $var: Option<$punct_set> = None;
         'wrap: {
-            
+
 
             let mut is_valid = false;
             if $input.peek(syn::Token![:]){

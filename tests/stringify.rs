@@ -36,9 +36,8 @@ fn stringable_parsable_displays_the_tokens_it_wraps() {
 fn stringable_parsable_wraps_a_boxed_trait_object() {
     // The shape `token_name!(parsable ...)` builds: the default type parameter, reached
     // through the one blanket `From`.
-    let wrapped: StringableParsable = StringableParsable::from(
-        Box::new(quote! { boxed }) as Box<dyn ToTokens>,
-    );
+    let wrapped: StringableParsable =
+        StringableParsable::from(Box::new(quote! { boxed }) as Box<dyn ToTokens>);
     assert_eq!(wrapped.to_string(), "boxed");
 }
 

@@ -64,7 +64,7 @@ macro_rules! token_name {
     (peekable $name:expr) => {
         {
             use $crate::stringify::peekable_as_string;
-            
+
 
             peekable_as_string($name)
         }

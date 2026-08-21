@@ -28,7 +28,11 @@ no_std = []
 no_alloc = ["no_std"]
 
 [dependencies]
-odebug = "0.1"
+# From git rather than crates.io, because 0.1 expands `cfg(feature = "always_log")` into the
+# caller's crate, where no such feature is declared, so every expansion warns and the cfg never
+# fires. Fixed on odebug's trunk and not yet released; this moves back to a version requirement
+# when it is.
+odebug = { git = "https://github.com/orgrinrt/odebug.git", branch = "dev" }
 # 0.0.5, which is what derive_display's main carries. A 0.0.x bump is a breaking change
 # under semver, so `version = "0.0.4"` here refused to resolve against it, and every
 # consumer of this crate without a lock file inherited that refusal.

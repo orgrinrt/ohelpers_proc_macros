@@ -17,14 +17,24 @@ use std::process::Command;
 ///
 /// `deps` is pasted into the consumer's `[dependencies]`, so a test can rename quote or
 /// leave it out entirely.
-fn consumer_compiles(name: &str, features: &str, deps: &str, attrs: &str, body: &str) -> (bool, String) {
+fn consumer_compiles(
+    name: &str,
+    features: &str,
+    deps: &str,
+    attrs: &str,
+    body: &str,
+) -> (bool, String) {
     let root = PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/target/consumers")).join(name);
     fs::create_dir_all(root.join("src")).expect("the consumer directory");
 
     let features_list = if features.is_empty() {
         String::new()
     } else {
-        features.split(',').map(|f| format!("\"{f}\"")).collect::<Vec<_>>().join(", ")
+        features
+            .split(',')
+            .map(|f| format!("\"{f}\""))
+            .collect::<Vec<_>>()
+            .join(", ")
     };
 
     fs::write(
@@ -50,17 +60,26 @@ features = [{features_list}]
     )
     .expect("the consumer manifest");
 
-    fs::write(root.join("src").join("lib.rs"), format!("{attrs}\n{body}\n"))
-        .expect("the consumer source");
+    fs::write(
+        root.join("src").join("lib.rs"),
+        format!("{attrs}\n{body}\n"),
+    )
+    .expect("the consumer source");
 
     let output = Command::new(env!("CARGO"))
         .args(["check", "--quiet"])
         .current_dir(&root)
-        .env("CARGO_TARGET_DIR", concat!(env!("CARGO_MANIFEST_DIR"), "/target/consumers/target"))
+        .env(
+            "CARGO_TARGET_DIR",
+            concat!(env!("CARGO_MANIFEST_DIR"), "/target/consumers/target"),
+        )
         .output()
         .expect("cargo runs");
 
-    (output.status.success(), String::from_utf8_lossy(&output.stderr).to_string())
+    (
+        output.status.success(),
+        String::from_utf8_lossy(&output.stderr).to_string(),
+    )
 }
 
 /// A use of the arm whose paths were wrong.
@@ -86,7 +105,10 @@ fn a_plain_consumer_can_use_it() {
         "",
         USES_PARSABLE_STD,
     );
-    assert!(ok, "an ordinary consumer can use `token_name!(parsable ..)`:\n{err}");
+    assert!(
+        ok,
+        "an ordinary consumer can use `token_name!(parsable ..)`:\n{err}"
+    );
 }
 
 #[test]
@@ -101,7 +123,10 @@ fn a_no_std_consumer_can_use_it_without_naming_alloc() {
         "#![no_std]\nextern crate alloc;",
         USES_PARSABLE,
     );
-    assert!(ok, "a `#![no_std]` consumer can use `token_name!(parsable ..)`:\n{err}");
+    assert!(
+        ok,
+        "a `#![no_std]` consumer can use `token_name!(parsable ..)`:\n{err}"
+    );
 }
 
 #[test]
