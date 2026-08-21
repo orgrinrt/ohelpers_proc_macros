@@ -209,3 +209,37 @@ fn find_end_of_widget_body_on_empty_input() {
     let taken = on("", find_end_of_widget_body).unwrap();
     assert!(shown(taken).is_empty());
 }
+
+#[test]
+fn a_brace_reaches_a_token_tree_walk_as_a_group_and_never_as_a_punct() {
+    // The fact several of the tests above rest on, established here rather than in a
+    // throwaway program. `find_end_of_widget_body` used to count `{` and `}` as `Punct`s;
+    // neither arm could ever fire, so its counter held zero for every input and the branch
+    // reading it was unreachable.
+    //
+    // It is worth pinning rather than assuming: it is a property of proc-macro2's
+    // tokenisation, not of this crate, so nothing here would fail if it changed.
+    let stream: TokenStream = "a { b } c".parse().unwrap();
+    let kinds: Vec<&'static str> = stream
+        .into_iter()
+        .map(|tree| match tree {
+            proc_macro2::TokenTree::Group(_) => "group",
+            proc_macro2::TokenTree::Ident(_) => "ident",
+            proc_macro2::TokenTree::Punct(_) => "punct",
+            proc_macro2::TokenTree::Literal(_) => "literal",
+        })
+        .collect();
+
+    assert_eq!(
+        kinds,
+        ["ident", "group", "ident"],
+        "the braces and their contents are one token, not three"
+    );
+
+    // And the group prints with its contents, which is why comparing a token's printed form
+    // against "{" never matches one.
+    let stream: TokenStream = "{ b }".parse().unwrap();
+    let only = stream.into_iter().next().unwrap();
+    assert_eq!(only.to_string(), "{ b }");
+    assert_ne!(only.to_string(), "{");
+}

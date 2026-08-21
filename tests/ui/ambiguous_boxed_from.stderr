@@ -1,0 +1,38 @@
+error[E0283]: type annotations needed for `StringableParsable<_>`
+  --> tests/ui/ambiguous_boxed_from.rs:12:9
+   |
+12 |     let _ambiguous = StringableParsable::from(Box::new(quote! { a + b }));
+   |         ^^^^^^^^^^   ------------------ type must be known at this point
+   |
+   = note: cannot satisfy `_: ToTokens`
+   = help: the following types implement trait `ToTokens`:
+             &T
+             &mut T
+             AnyParsable
+             Arc<T>
+             Box<T>
+             CStr
+             CString
+             Cow<'a, T>
+           and $N others
+note: required by a bound in `StringableParsable`
+  --> src/stringify.rs
+   |
+   | pub struct StringableParsable<T: ToTokens = Box<dyn ToTokens>>(T);
+   |                                  ^^^^^^^^ required by this bound in `StringableParsable`
+help: consider giving `_ambiguous` an explicit type, where the type for type parameter `T` is specified
+   |
+12 |     let _ambiguous: StringableParsable<T> = StringableParsable::from(Box::new(quote! { a + b }));
+   |                   +++++++++++++++++++++++
+
+error[E0283]: type annotations needed
+  --> tests/ui/ambiguous_boxed_from.rs:12:22
+   |
+12 |     let _ambiguous = StringableParsable::from(Box::new(quote! { a + b }));
+   |                      ^^^^^^^^^^^^^^^^^^ cannot infer type for struct `StringableParsable<_>`
+   |
+   = note: multiple `impl`s satisfying `StringableParsable<_>: From<Box<proc_macro2::TokenStream>>` found in the `ohelpers_proc_macros` crate:
+           - impl<T> From<Box<T>> for StringableParsable<T>
+             where T: ToTokens;
+           - impl<T> From<T> for StringableParsable<T>
+             where T: ToTokens;
