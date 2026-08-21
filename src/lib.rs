@@ -1,3 +1,30 @@
+// `alloc` rather than `std`, and re-exported rather than named at the expansion site.
+//
+// `Box` and `ToString` live in `alloc` and are re-exported by `std`, so these are the same
+// two types either way. What the re-export buys is that a consumer never has to name either
+// crate: the exported macros go through `$crate::__ohelpers_box`, which resolves wherever
+// this crate does, so a `#![no_std]` consumer needs no `extern crate alloc;` of its own and
+// a consumer that renamed its dependencies is unaffected.
+//
+// Naming them through the prelude is what the `token_name!(parsable ..)` arm used to do,
+// and it resolved only in a consumer that was neither.
+extern crate alloc;
+
+#[doc(hidden)]
+pub use ::alloc::boxed as __ohelpers_box;
+#[doc(hidden)]
+pub use ::alloc::string as __ohelpers_string;
+
+// Same reasoning, one level out. `::quote::ToTokens` is absolute within the *consumer's*
+// crate graph, so it resolves only where the consumer has a dependency spelled `quote`.
+// A crate that renamed it got `could not find 'quote' in the list of imported crates`,
+// spanned inside the macro. Reached through this crate, which does have both under those
+// names, it resolves wherever this crate does.
+#[doc(hidden)]
+pub use ::quote::ToTokens as __ohelpersToTokens;
+#[doc(hidden)]
+pub use ::syn::token::Token as __ohelpersToken;
+
 /// Debug logging shim over [`odebug`].
 ///
 /// The crate previously logged through `debug_helpers::debug_file`, which no longer exists;

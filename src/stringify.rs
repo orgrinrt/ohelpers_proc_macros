@@ -15,27 +15,39 @@ macro_rules! token_name {
             .unwrap_or(::core::any::type_name::<$name>())
     };
     (peekable ty $name:ty) => {
-        <$name as ::syn::token::Token>::display()
+        <$name as $crate::__ohelpersToken>::display()
     };
     (parsable $name:expr) => {
         {
             use $crate::stringify::StringableParsable;
-            use quote::ToTokens;
 
-            let name = (<StringableParsable as From<Box<dyn ToTokens>>>::from(Box::new($name.clone
-            ()))
-            ).to_string();
-            name
+            // Every path absolute. This arm named `quote` without a leading `::` and
+            // reached `Box` and `to_string` through the prelude, so it resolved in a crate
+            // that depends on quote under that exact name and is not `#![no_std]`, and
+            // nowhere else. The neighbouring arm was already written this way, which is
+            // what made the difference easy to miss.
+            let boxed: $crate::__ohelpers_box::Box<dyn $crate::__ohelpersToTokens> =
+                $crate::__ohelpers_box::Box::new($name.clone());
+            $crate::__ohelpers_string::ToString::to_string(
+                &<StringableParsable as ::core::convert::From<
+                    $crate::__ohelpers_box::Box<dyn $crate::__ohelpersToTokens>,
+                >>::from(boxed),
+            )
         }
     };
     (parsable ty $name:expr) => {
         {
-            use ::quote::ToTokens;
-
-            let name = $name.clone().into_token_stream().to_string();
+            // `to_string` through this crate rather than through the prelude, for the same
+            // reason as the arm above: the prelude is the consumer's, and a `#![no_std]`
+            // one does not have it.
+            let name = $crate::__ohelpers_string::ToString::to_string(
+                &$crate::__ohelpersToTokens::into_token_stream($name.clone()),
+            );
             // Trimmed, because a rendered path reads `a :: b :: C` and the raw segment
             // would carry the space that separated it from the `::`.
-            name.rsplit("::").next().unwrap_or(&name).trim().to_string()
+            $crate::__ohelpers_string::ToString::to_string(
+                name.rsplit("::").next().unwrap_or(&name).trim(),
+            )
         }
     };
     (ident $name:ident) => {

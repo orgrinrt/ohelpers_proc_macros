@@ -13,10 +13,26 @@ documentation = "https://docs.rs/ohelpers_proc_macros"
 [features]
 default = []
 debug_file = []
+# Neither changes anything, and that is the point of how the `Box` and `ToString` paths
+# are written: the exported macros go through re-exports from this crate rather than
+# naming `std`, `alloc` or the prelude, so one spelling already serves a `#![no_std]`
+# consumer and a plain one alike.
+#
+# This crate itself stays `std` whatever is selected. It is a helper library for writing
+# proc macros, so it runs on the host inside the compiler, where syn, quote,
+# proc-macro2, proc-macro-crate and lazy_static all use `std`.
+no_std = []
+# Implies `no_std`, and governs this crate's own surface, which is empty. The exported
+# macros still allocate: `token_name!(parsable ..)` boxes a `dyn ToTokens` and renders it
+# to a `String`, which is what it is for.
+no_alloc = ["no_std"]
 
 [dependencies]
 odebug = "0.1"
-derive_display = { git = "https://github.com/orgrinrt/derive_display.git", version = "0.0.4" }
+# 0.0.5, which is what derive_display's main carries. A 0.0.x bump is a breaking change
+# under semver, so `version = "0.0.4"` here refused to resolve against it, and every
+# consumer of this crate without a lock file inherited that refusal.
+derive_display = { git = "https://github.com/orgrinrt/derive_display.git", version = "0.0.5" }
 syn = { version = "2.0.52", features = ["full", "extra-traits"] }
 quote = "1.0.9"
 paste = "1.0.14"
