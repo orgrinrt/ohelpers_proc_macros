@@ -62,6 +62,16 @@ Every assertion above was run against the crate rather than written from the mac
 
 ---
 
+## Examples
+
+`examples/` runs. `cargo test` executes each one and asserts on what it printed, so an example
+that stops working is a red test rather than something a reader finds out by copying it.
+
+| Example | What it shows |
+|---|---|
+| `one_helper.rs` | `quote_if!` emitting a fragment, and emitting nothing, which is not the same as an empty block |
+| `every_helper.rs` | every helper, including `token_name!` seeing through a generic to what it was instantiated with |
+
 ## Features
 
 | Feature | Default | What it does |
