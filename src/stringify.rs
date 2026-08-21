@@ -81,6 +81,33 @@ impl<T: ToTokens> From<T> for StringableParsable<T> {
     }
 }
 
+/// Unwraps the box rather than wrapping it.
+///
+/// This was removed during a cleanup on the grounds that it needed an unsized `T` to be
+/// reached, which is false: with `T = TokenStream` it is reachable by type annotation, and
+/// removing it turned `StringableParsable::<TokenStream>::from(Box::new(tokens))` from a
+/// conversion into a type error. Worse than the error, a caller using `.into()` without an
+/// annotation silently got `StringableParsable<Box<T>>` instead.
+///
+/// It does overlap with the blanket impl above for a boxed argument, so an unannotated
+/// `from` on a `Box` is ambiguous. That is a papercut a turbofish settles, and it is a
+/// smaller cost than not having the conversion:
+///
+/// ```
+/// use ohelpers_proc_macros::stringify::StringableParsable;
+/// use quote::quote;
+///
+/// // The box is unwrapped: the wrapped type is `TokenStream`, not `Box<TokenStream>`.
+/// let unwrapped: StringableParsable<proc_macro2::TokenStream> =
+///     StringableParsable::from(Box::new(quote! { a + b }));
+/// assert_eq!(unwrapped.to_string(), "a + b");
+/// ```
+impl<T: ToTokens> From<Box<T>> for StringableParsable<T> {
+    fn from(value: Box<T>) -> Self {
+        StringableParsable(*value)
+    }
+}
+
 impl<T: ToTokens> Display for StringableParsable<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!("{}", parsable_as_string(self)))

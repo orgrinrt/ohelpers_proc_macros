@@ -107,3 +107,13 @@ fn arm_display_uses_the_display_impl() {
     assert_eq!(token_name!(display 42), "42");
     assert_eq!(token_name!(display "text"), "text");
 }
+
+#[test]
+fn a_boxed_value_is_unwrapped_rather_than_wrapped() {
+    // `From<Box<T>> for StringableParsable<T>` was removed on the claim that it needed an
+    // unsized `T` to be reached. With `T = TokenStream` it is reachable by annotation, and
+    // without it this line is a type error rather than a conversion.
+    let unwrapped: StringableParsable<proc_macro2::TokenStream> =
+        StringableParsable::from(Box::new(quote! { a + b }));
+    assert_eq!(unwrapped.to_string(), "a + b");
+}
