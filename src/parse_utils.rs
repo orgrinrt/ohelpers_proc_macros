@@ -1,14 +1,13 @@
-use std::any::{Any, TypeId};
 use std::fmt::Display;
 
 use proc_macro2::TokenTree;
 use quote::ToTokens;
 use syn::__private::TokenStream2;
-use syn::parse::{Parse, ParseBuffer, ParseStream, Parser, Peek};
+use syn::parse::{Parse, ParseBuffer, ParseStream, Peek};
 use syn::token::Token;
 use syn::Token;
 
-use crate::{__pmmh_debug_file, token_name};
+use crate::token_name;
 
 pub struct AnyParsable(TokenTree);
 
@@ -27,45 +26,25 @@ impl ToTokens for AnyParsable {
     }
 }
 
+/// Takes the tokens up to the `#` that follows a group, leaving the `#` for the caller.
+///
+/// A brace reaches a `TokenTree` iteration as a single `Group` carrying its contents, so
+/// the nesting is structural and needs no counting: the terminator can only be at this
+/// level. An earlier version counted `{` and `}` as `Punct`s, which they never are, so the
+/// counter held zero for every input and the branch that read it was unreachable.
 pub fn find_end_of_widget_body(input: ParseStream) -> syn::Result<TokenStream2> {
     let mut output = TokenStream2::new();
-    let mut braces_counter = 0;
-    let lookahead_fork = input.fork();
 
-    while !lookahead_fork.is_empty() {
-        let lookahead = lookahead_fork.parse::<TokenTree>()?;
-        let l = &lookahead;
+    while !input.is_empty() {
+        let lookahead = input.fork().parse::<TokenTree>()?;
 
-        match l {
-            TokenTree::Punct(punct) if punct.as_char() == '{' => {
-                braces_counter += 1;
+        if let TokenTree::Punct(punct) = &lookahead {
+            if punct.as_char() == '#' && output.to_string().trim_end().ends_with('}') {
+                break;
             }
-            TokenTree::Punct(punct) if punct.as_char() == '}' => {
-                braces_counter -= 1;
-
-                if braces_counter <= 1 {
-                    // Lookahead to check the next token
-                    let next_fork = input.fork();
-                    // Check if there's more tokens AND the next token is our delimiter
-                    if !next_fork.is_empty() {
-                        let next_token = next_fork.parse::<Token![#]>();
-                        if let Ok(t) = next_token {
-                            break;
-                        }
-                    }
-                }
-            }
-            TokenTree::Punct(punct) if punct.as_char() == '#' => {
-                if output.to_string().trim_end().ends_with("}") {
-                    break;
-                }
-            }
-            _ => {}
         }
 
-        output.extend(Some(lookahead));
-        // Consume the token from the input
-        let _ = input.parse::<TokenTree>()?;
+        output.extend(Some(input.parse::<TokenTree>()?));
     }
 
     Ok(output)
@@ -114,10 +93,13 @@ pub fn comes_next_any_surrounder(input: &ParseBuffer, dir: SurrounderDir) -> boo
         {
             return true;
         }
-        return false;
+        false
     } else {
         let fork = input.fork();
-        let tt = fork.parse::<TokenTree>().unwrap();
+        let Ok(tt) = fork.parse::<TokenTree>() else {
+            // Nothing comes next at all, which is a `false` rather than a panic.
+            return false;
+        };
         __pmmh_debug_file!(!"\t>> found token: {}", tt.to_string());
         if dir == SurrounderDir::Forward {
             if tt.to_string().trim() == "{"
@@ -142,7 +124,7 @@ pub fn comes_next_any_surrounder(input: &ParseBuffer, dir: SurrounderDir) -> boo
 
 pub fn parse_until<E: Token + Parse + Default + 'static>(
     input: ParseStream,
-    end: E,
+    _end: E,
 ) -> syn::Result<TokenStream2> {
     let mut tokens = TokenStream2::new();
     while !input.is_empty() {
@@ -154,8 +136,7 @@ pub fn parse_until<E: Token + Parse + Default + 'static>(
         );
         if let Some(t) = tt {
             let ts = t.to_token_stream();
-            let e: Option<E> = syn::parse2::<E>(ts).ok();
-            if t.type_id() == TypeId::of::<E>() || e.is_some() {
+            if syn::parse2::<E>(ts).is_ok() {
                 break;
             }
         }
@@ -203,13 +184,11 @@ pub fn parse_tokens_until<E: Display>(input: TokenStream2, end: E) -> syn::Resul
 #[macro_export]
 macro_rules! discard_next_token {
     ($input:expr) => {{
-        use syn::parse::Parse;
-        let discard = $input.parse::<proc_macro2::TokenTree>().ok();
-        if discard.is_some() {
-            use $crate::__pmmh_debug_file;
-            __pmmh_debug_file!(!"\t\t<<< Discarding {}", discard.unwrap().to_string());
-        } else {
-            panic!("Attempted to discard from stream, but found no tokens");
+        match $input.parse::<proc_macro2::TokenTree>() {
+            Ok(discarded) => {
+                __pmmh_debug_file!(!"\t\t<<< Discarding {}", discarded.to_string());
+            },
+            Err(_) => panic!("Attempted to discard from stream, but found no tokens"),
         }
     }};
     ($input:expr, _) => {{
@@ -342,7 +321,7 @@ macro_rules! unwrap_body {
     };
     (explicit ty $input:expr, $var:ident, $delim:ty) => {
         {
-            use $crate::stringify::StringableParsable;
+            
             use $crate::token_name;
             use $crate::compare_tokens;
 
@@ -371,7 +350,7 @@ macro_rules! unwrap_input {
     };
     ($input:expr, $new:ident, $token:ty) => {
         paste! {
-            let mut $new: syn::parse::ParseStream;
+            let  $new: syn::parse::ParseStream;
             let mut [<_ $new>];
             {
                 use $crate::parse_utils::comes_next;
@@ -400,8 +379,7 @@ macro_rules! try_get_tuple_params {
     ($input:expr, $var:ident, $punct_set:ty) => {
         let mut $var: Option<$punct_set> = None;
         {
-            use syn::parse::Parse;
-            use syn::parse::Peek;
+            
 
             if $input.peek(token::Paren) || $input.peek2(token::Paren) {
                 if $input.peek2(token::Paren) {
@@ -423,8 +401,7 @@ macro_rules! try_get_trails {
     ($input:expr, $var:ident, $punct_set:ty) => {
         let mut $var: Option<$punct_set> = None;
         'wrap: {
-            use syn::parse::Parse;
-            use syn::parse::Peek;
+            
 
             let mut is_valid = false;
             if $input.peek(syn::Token![:]){
@@ -488,7 +465,6 @@ macro_rules! try_get_body {
     };
     (explicit $input:expr, $var:ident, $delim:expr) => {
         {
-            use syn::parse::Parse;
             use syn::parse::Peek;
 
             let mut is_valid = false;

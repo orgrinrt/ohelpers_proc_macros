@@ -1,6 +1,5 @@
 use std::fmt::{Display, Formatter};
 
-use crate::__pmmh_debug_file;
 use derive_display::derive_display;
 use proc_macro2::{Ident, TokenStream, TokenTree};
 use quote::{quote, ToTokens};
@@ -67,11 +66,11 @@ impl ToTokens for Define {
 
 impl Parse for Define {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        let ident: Ident = input.parse().ok().expect("Expected an ident");
+        let ident: Ident = input.parse().expect("Expected an ident");
         let _ = input
             .parse::<TokenTree>()
             .expect("Expected a `:` to separate ident and value");
-        let value: TokenStream2 = input.parse().ok().expect(
+        let value: TokenStream2 = input.parse().expect(
             "Expected a value after the \
         ident",
         );
