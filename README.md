@@ -1,19 +1,16 @@
-ohelpers_proc_macros
-============
-[![GitHub Stars](https://img.shields.io/github/stars/orgrinrt/ohelpers_proc_macros.svg)](https://github.com/orgrinrt/ohelpers_proc_macros/stargazers) 
-[![GitHub Issues](https://img.shields.io/github/issues/orgrinrt/ohelpers_proc_macros.svg)](https://github.com/orgrinrt/ohelpers_proc_macros/issues) 
-[![Current Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/orgrinrt/ohelpers_proc_macros) 
+# `ohelpers_proc_macros`
 
-A collection of miscellaneous helpers, shorthands and common useful bits for Rust proc macros.
+<div align="center" style="text-align: center;">
 
----
-## Buy me a coffee
+[![GitHub Stars](https://img.shields.io/github/stars/orgrinrt/ohelpers_proc_macros.svg)](https://github.com/orgrinrt/ohelpers_proc_macros/stargazers)
+[![Crates.io](https://img.shields.io/crates/v/ohelpers_proc_macros)](https://crates.io/crates/ohelpers_proc_macros)
+[![docs.rs](https://img.shields.io/docsrs/ohelpers_proc_macros)](https://docs.rs/ohelpers_proc_macros)
+[![GitHub Issues](https://img.shields.io/github/issues/orgrinrt/ohelpers_proc_macros.svg)](https://github.com/orgrinrt/ohelpers_proc_macros/issues)
+![License](https://img.shields.io/github/license/orgrinrt/ohelpers_proc_macros?color=%23009689)
 
-Whether you use this project, have learned something from it, or just like it, please consider supporting it by buying me a coffee, so I can dedicate more time on open-source projects like this :)
+> Miscellaneous helpers and shorthands for writing rust proc macros.
 
-<a href="https://buymeacoffee.com/orgrinrt" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
-
----
+</div>
 
 ## Usage
 
@@ -89,7 +86,16 @@ have the claim checked, and `tests/feature_matrix.rs` compiles a real consumer u
 This crate itself is always `std`. It is a helper library for writing procedural macros, which
 run in the compiler, and the compiler has an allocator.
 
-## License
->You can check out the full license [here](https://github.com/orgrinrt/ohelpers_proc_macros/blob/main/LICENSE)
+## Support
 
-This project is licensed under the terms of the **MPL-2.0** license.
+Whether you use this project, have learned something from it, or just like it, please consider supporting it by buying me a coffee, so I can dedicate more time on open-source projects like this :)
+
+<a href="https://buymeacoffee.com/orgrinrt" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
+
+## License
+
+> The project is licensed under the **Mozilla Public License 2.0**.
+
+`SPDX-License-Identifier: MPL-2.0`
+
+> You can check out the full license [here](https://github.com/orgrinrt/ohelpers_proc_macros/blob/dev/LICENSE)
