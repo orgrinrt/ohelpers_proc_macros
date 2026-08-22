@@ -1,6 +1,5 @@
 [package]
 name = "ohelpers_proc_macros"
-authors = ["orgrinrt", "Hiisi Digital"]
 version = "0.1.0"
 edition = "2021"
 description = "A collection of miscellaneous helpers, shorthands and common useful bits for Rust proc macros"
@@ -9,6 +8,9 @@ readme = "README.md"
 repository = "https://github.com/orgrinrt/ohelpers_proc_macros"
 homepage = "https://github.com/orgrinrt/ohelpers_proc_macros"
 documentation = "https://docs.rs/ohelpers_proc_macros"
+keywords = ["proc-macro", "quote", "syn", "helpers", "macros"]
+exclude = [".idea/", "target/"]
+categories = ["development-tools", "development-tools::procedural-macro-helpers", "rust-patterns"]
 
 [features]
 default = []
@@ -32,7 +34,7 @@ no_alloc = ["no_std"]
 # caller's crate, where no such feature is declared, so every expansion warns and the cfg never
 # fires. Fixed on odebug's trunk and not yet released; this moves back to a version requirement
 # when it is.
-odebug = { git = "https://github.com/orgrinrt/odebug.git", branch = "dev" }
+odebug = { git = "https://github.com/orgrinrt/odebug.git", branch = "dev", version = "0.2.0" }
 # 0.0.5, which is what derive_display's main carries. A 0.0.x bump is a breaking change
 # under semver, so `version = "0.0.4"` here refused to resolve against it, and every
 # consumer of this crate without a lock file inherited that refusal.
