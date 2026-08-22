@@ -12,6 +12,22 @@
 
 </div>
 
+## Installation
+
+Not published yet, so this does not resolve. It is the command once a release
+lands.
+
+```bash
+cargo add ohelpers_proc_macros
+```
+
+Or in `Cargo.toml`:
+
+```toml
+[dependencies]
+ohelpers_proc_macros = "0.1"
+```
+
 ## Usage
 
 These are used from inside another crate's proc macro, so the examples below are written the way a
