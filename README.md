@@ -1,40 +1,17 @@
 # `ohelpers_proc_macros`
 
-<div align="center" style="text-align: center;">
-
-[![GitHub Stars](https://img.shields.io/github/stars/orgrinrt/ohelpers_proc_macros.svg)](https://github.com/orgrinrt/ohelpers_proc_macros/stargazers)
-[![Crates.io](https://img.shields.io/crates/v/ohelpers_proc_macros)](https://crates.io/crates/ohelpers_proc_macros)
-[![docs.rs](https://img.shields.io/docsrs/ohelpers_proc_macros)](https://docs.rs/ohelpers_proc_macros)
-[![GitHub Issues](https://img.shields.io/github/issues/orgrinrt/ohelpers_proc_macros.svg)](https://github.com/orgrinrt/ohelpers_proc_macros/issues)
-![License](https://img.shields.io/github/license/orgrinrt/ohelpers_proc_macros?color=%23009689)
-
 > Miscellaneous helpers and shorthands for writing rust proc macros.
 
-</div>
-
-## Installation
-
-Not published yet, so this does not resolve. It is the command once a release
-lands.
-
-```bash
-cargo add ohelpers_proc_macros
-```
-
-Or in `Cargo.toml`:
-
-```toml
-[dependencies]
-ohelpers_proc_macros = "0.1"
-```
+A small collection of helpers that a macro author calls from inside a proc macro. `quote_if!` emits a fragment only when a predicate holds, instead of an `if`/`else` wrapped around two `quote!` calls, and `token_name!` gives the last segment of a type path, seeing through a generic parameter to the type it was instantiated with.
 
 ## Usage
 
-These are used from inside another crate's proc macro, so the examples below are written the way a
-macro author calls them.
+Not published to crates.io yet, so it is a git dependency for now.
 
-`quote_if!` emits a block only when a predicate holds, which is the thing that otherwise turns every
-optional fragment into an `if`/`else` wrapped around two `quote!` calls:
+```toml
+[dependencies]
+ohelpers_proc_macros = { git = "https://github.com/orgrinrt/ohelpers_proc_macros", branch = "dev" }
+```
 
 ```rust
 use ohelpers_proc_macros::{quote_if, token_name, TokenStream2};
@@ -55,9 +32,6 @@ let maybe: Option<TokenStream2> = Some(quote! { value });
 assert_eq!(quote_if!(some maybe).to_string(), quote! { value }.to_string());
 ```
 
-`token_name!` gives the last segment of a type path, and sees through a generic parameter to the type
-it was instantiated with:
-
 ```rust
 use ohelpers_proc_macros::token_name;
 
@@ -71,42 +45,11 @@ assert_eq!(named::<u32>(), "u32");
 assert_eq!(named::<String>(), "String");
 ```
 
-Every assertion above was run against the crate rather than written from the macro names.
-
----
-
-## Examples
-
-`examples/` runs. `cargo test` executes each one and asserts on what it printed, so an example
-that stops working is a red test rather than something a reader finds out by copying it.
-
-| Example | What it shows |
-|---|---|
-| `one_helper.rs` | `quote_if!` emitting a fragment, and emitting nothing, which is not the same as an empty block |
-| `every_helper.rs` | every helper, including `token_name!` seeing through a generic to what it was instantiated with |
+`examples/one_helper.rs` and `examples/every_helper.rs` run, and `cargo test` executes each and checks what it printed.
 
 ## Features
 
-| Feature | Default | What it does |
-|---|---|---|
-| `debug_file` | no | Writes what the macros expand to into a file, through `odebug`, which is how you find out what a generated body actually is. |
-| `no_std` | no | Says the consumer is `#![no_std]`. |
-| `no_alloc` | no | Says the consumer has no allocator either. Implies `no_std`. |
-
-Neither `no_std` nor `no_alloc` changes what this crate emits, and that is deliberate rather
-than an omission: the exported macros reach for `Box` and `ToString` through re-exports from
-this crate rather than naming `std`, `alloc` or the prelude, so one spelling already serves a
-`#![no_std]` consumer and a plain one alike. They exist so a consumer can say what it is and
-have the claim checked, and `tests/feature_matrix.rs` compiles a real consumer under each.
-
-This crate itself is always `std`. It is a helper library for writing procedural macros, which
-run in the compiler, and the compiler has an allocator.
-
-## Support
-
-Whether you use this project, have learned something from it, or just like it, please consider supporting it by buying me a coffee, so I can dedicate more time on open-source projects like this :)
-
-<a href="https://buymeacoffee.com/orgrinrt" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
+`debug_file` writes what the macros expand to into a file through `odebug`, which is how to find out what a generated body is. `no_std` and `no_alloc` say that the consumer is `#![no_std]` or has no allocator, and they change nothing in what this crate emits, since the exported macros reach `Box` and `ToString` through re-exports and not by naming `std` or `alloc`. `tests/feature_matrix.rs` compiles a real consumer under each. This crate itself is always `std`, as it runs inside the compiler.
 
 ## License
 
